@@ -1,0 +1,81 @@
+#code to make availible in addon section
+bl_info = {
+    "name" : "Camera Track Panel",
+    "category" : "Camera",
+    "author" : "Tim M"
+    }
+
+import bpy
+
+class Camera_Track(bpy.types.Panel):
+    bl_label = "Camera Track Panel"
+    bl_idname = "PT_CameraTrack"
+    # next three lines tell where to sit on screen
+    bl_space_type = 'VIEW_3D' 
+    bl_region_type = 'UI' 
+    bl_category = 'Camera Track Panel'
+    
+    #assign the active object to variable
+    obj = bpy.context.active_object
+    
+    #sets the workspace to POSE mode for the selected armature
+    bpy.ops.object.mode_set(mode='POSE',toggle=False) 
+    #auto selects the head bone
+    bpy.data.objects[obj.name].data.bones["head"].select = True
+    
+    armature1 = bpy.data.objects[obj.name]
+    
+    #--------HEAD--------
+    selected_bone = armature1.pose.bones["head"]
+    
+    headconstraint = selected_bone.constraints
+  
+    headTrackTo = headconstraint.new('TRACK_TO')
+
+    headTrackTo.target = bpy.data.objects["Camera"]
+
+    #Axis - Update the Track To access parameter, default is -Z
+    headTrackTo.track_axis = 'TRACK_Z'
+    
+    #--------LEYE--------
+    selected_bone = armature1.pose.bones["lEye"]
+    leyeconstraint = selected_bone.constraints
+  
+    leyeTrackTo = leyeconstraint.new('DAMPED_TRACK')
+
+    leyeTrackTo.target = bpy.data.objects["Camera"]
+
+    #--------REYE--------
+    selected_bone = armature1.pose.bones["rEye"]
+    reyeconstraint = selected_bone.constraints
+  
+    reyeTrackTo = reyeconstraint.new('DAMPED_TRACK')
+
+    reyeTrackTo.target = bpy.data.objects["Camera"]
+
+    
+    def draw(self, context):
+        layout = self.layout
+        
+        row  = layout.row()
+        row.label(text = "Sample Test", icon ='CUBE')
+        
+        #continue to tell panel how to layout 
+        row.operator("mesh.primitive_cube_add")
+   
+        #register panel
+def register():
+    #register the class name panel
+    bpy.utils.register_class(Camera_Track)
+    
+    
+def unregister():
+     #unregister the class name panel
+    bpy.utils.unregister_class(Camera_Track)
+    
+    
+#if you dont have this, it wont appear without the text editor  
+if __name__ == "__main__":
+    register()
+
+    
